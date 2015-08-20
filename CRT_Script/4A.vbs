@@ -158,4 +158,4 @@ set fso=CreateObject("Scripting.FileSystemObject")
 ' for each devName2 in split(devNameL,",")
 ' 	msgbox(devName2)
 ' next
-msgbox(split(devNameL,",")(0))
+' msgbox(split(devNameL,",")(0))
