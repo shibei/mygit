@@ -159,3 +159,4 @@ set fso=CreateObject("Scripting.FileSystemObject")
 ' 	msgbox(devName2)
 ' next
 ' msgbox(split(devNameL,",")(0))
+'test'
