@@ -76,27 +76,35 @@ Function wait (objTab)
 End Function
 
 Sub defaultComm (objTab)
-	objTab.Screen.Send("en" & chr(13))
-	objTab.Screen.WaitForString("assword:")
-	objTab.Screen.Send("wlan!@#00" & chr(13))
-	objTab.Screen.WaitForString("#")
-	objTab.Screen.Send("terminal length 0" & chr(13))
-	objTab.Screen.WaitForString("#")
+	checkTime="checktime "&date&" "&hour(now)&":"&minute(now)&":"&second(now)&" checktime"
+	line="=========="
+	if getMode(objTab)="user" then
+		objTab.Screen.Send("en" & chr(13))
+		objTab.Screen.WaitForString("assword:")
+		objTab.Screen.Send("wlan!@#00" & chr(13))
+		objTab.Screen.WaitForString("#")
+	else 
+		objTab.Screen.Send("terminal length 0" & chr(13))
+		objTab.Screen.WaitForString("#")
+		objTab.Screen.Send("!"&line&checktime&line& chr(13))
+		objTab.Screen.WaitForString("#")
+	end if 
 End Sub
 
 sub getLog(objTab)
 	if getMode(objTab)="user" then
 		defaultComm(objTab)
 	end if 
-
+	objTab.Activate
 	objTab.Session.LogFileName=fileName(objTab)
 	if objTab.Session.LogFileName<>"" then
 		objTab.Session.Log(False)
 	end if 
 	objTab.Session.Log(True)
+	defaultComm(objTab)
 	for each comm in split(getComm(),chr(13))
 		objTab.Screen.Send(RTrim(comm) & chr(13))
-		objTab.Screen.WaitForString(wait(objTab))
+		objTab.Screen.WaitForString("#")
 	next
 	objTab.Session.Log(False)
 end sub
@@ -116,47 +124,87 @@ Function devNameL ()
 	next
 End Function
 
+Function waitStop (objTab)
+	currentRow=RTrim(objTab.Screen.Get(objTab.Screen.CurrentRow,1,_
+		objTab.Screen.CurrentRow,objTab.Screen.Columns))
+	if objTab.Screen.CurrentColumn>2 and instr(1,currentRow,"#")>0 then
+		waitStop=True
+	else
+		waitStop=False
+	end if
+End Function
+
+Function openLogAll ()
+	logNum=crt.GetTabCount
+	for l=1 to logNum
+		set objLogO=crt.GetTab(l)
+		objLogO.Session.LogFileName=fileName(objLogO)
+		if objLogO.Session.LogFileName<>"" then
+			objLogO.Session.Log(False)
+		end if 
+		objLogO.Session.Log(True)
+	next
+End Function
+
+Function closeLogAll ()
+	logNum=crt.GetTabCount
+	for l=1 to logNum
+		set objLogC=crt.GetTab(l)
+		if objLogC.Session.LogFileName<>"" then
+			objLogC.Session.Log(False)
+		end if 
+	next
+End Function
+
+Sub reset ()
+	logNum=crt.GetTabCount
+	for r=1 to logNum
+		set objRes=crt.GetTab(r)
+		objRes.Activate
+		objRes.Screen.Clear 
+		objRes.Screen.Send(chr(13)&chr(13)&chr(13))
+	next
+	crt.GetTab(1).Activate
+End Sub
+
 set fso=CreateObject("Scripting.FileSystemObject")
 
+' openLogAll()
+
 ' tabNum=crt.GetTabCount
-' for tab=1 to tabNum
-' 	set objTab=crt.GetTab(tab)
-' 	objTab.Activate
-' 	getLog(objTab)
-' next
-
-' crt.Dialog.MessageBox("Completed!")
-
 ' for each comm in split(getComm(),chr(13))
 ' 	for tab=1 to tabNum
 ' 		set objTab=crt.GetTab(tab)
 ' 		objTab.Activate
+' 		'objTab.Screen.Clear
 ' 		objTab.Screen.Send(RTrim(comm) & chr(13))
-' 		crt.Screen.Clear
+' 		crt.sleep(5000)
 ' 	next
-' 	crt.sleep(2000)
+' 	crt.GetTab(1).Activate
+' 	crt.sleep(1000)
 ' 	check=1
+' 	count=1
 ' 	do while(check<=tabNum)
 ' 		set checkTab=crt.GetTab(check)
 ' 		checkTab.Activate
-' 		'msgbox(checkTab.Screen.WaitForString(wait(checkTab),1))
-' 		if checkTab.Screen.WaitForString("#") then
-' 			count=1
-' 		else 
-' 			count=0
+' 		if waitStop(checkTab) then
+' 			check=check+1
+' 			checkTime="checktime "&date&" "&hour(now)&":"&minute(now)&":"&second(now)&" checktime"
+' 			line="=========="
+' 			checkTab.Screen.Send("!"&line&checktime&line& chr(13))
 ' 		end if 
-' 		check=check+1
-' 		' if check>tabNum and count<tabNum then
-' 		' 	check=1
-' 		' elseif check>tabNum and count>tabNum then
-' 		' 	check=99
-' 		' end if 
-' 		msgbox(count)
+' 		count=count+1
+' 		if count>15 then
+' 			reset()
+' 			count=1
+' 		end if 
+' 		crt.sleep(1000)
 ' 	loop
 ' next
 
-' for each devName2 in split(devNameL,",")
-' 	msgbox(devName2)
-' next
-' msgbox(split(devNameL,",")(0))
-'test'
+' closeLogAll()
+tabNum=crt.GetTabCount
+for tab=1 to tabNum
+	set objTab=crt.GetTab(tab)
+	getLog(objTab)
+next
