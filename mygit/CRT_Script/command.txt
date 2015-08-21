@@ -1,0 +1,16 @@
+ter le 0
+show cpu  | include five minute
+show version 
+show power
+show ip interface brief 
+show ip route 
+show ssh 
+show running-config | b line vty
+show snmp host
+show hot-backup
+show ap-config summary
+show wlan users
+show wlan-config summary
+show clock
+show access-lists
+show ip dhcp pool
