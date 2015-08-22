@@ -169,42 +169,9 @@ End Sub
 
 set fso=CreateObject("Scripting.FileSystemObject")
 
-' openLogAll()
-
-' tabNum=crt.GetTabCount
-' for each comm in split(getComm(),chr(13))
-' 	for tab=1 to tabNum
-' 		set objTab=crt.GetTab(tab)
-' 		objTab.Activate
-' 		'objTab.Screen.Clear
-' 		objTab.Screen.Send(RTrim(comm) & chr(13))
-' 		crt.sleep(5000)
-' 	next
-' 	crt.GetTab(1).Activate
-' 	crt.sleep(1000)
-' 	check=1
-' 	count=1
-' 	do while(check<=tabNum)
-' 		set checkTab=crt.GetTab(check)
-' 		checkTab.Activate
-' 		if waitStop(checkTab) then
-' 			check=check+1
-' 			checkTime="checktime "&date&" "&hour(now)&":"&minute(now)&":"&second(now)&" checktime"
-' 			line="=========="
-' 			checkTab.Screen.Send("!"&line&checktime&line& chr(13))
-' 		end if 
-' 		count=count+1
-' 		if count>15 then
-' 			reset()
-' 			count=1
-' 		end if 
-' 		crt.sleep(1000)
-' 	loop
-' next
-
-' closeLogAll()
-tabNum=crt.GetTabCount
-for tab=1 to tabNum
-	set objTab=crt.GetTab(tab)
-	getLog(objTab)
-next
+c=crt.Dialog.Prompt("1=open all log, 2=close all log",False)
+if c=1 then
+	openLogAll()
+else
+	closeLogAll()
+end if 

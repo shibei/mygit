@@ -167,44 +167,50 @@ Sub reset ()
 	crt.GetTab(1).Activate
 End Sub
 
+Sub apCfg (objTab)
+	serverip="221.216.145.214"
+	t=year(now)&month(now)&day(now)
+	ap="copy flash:ap-config.text tftp://"&serverip&"/ap-"&replace(mid(fileName(objTab),7),".log","")&"-"&t&".log"
+	objTab.Screen.Send(ap & chr(13))
+End Sub
+
+Sub runCfg (objTab)
+	serverip="221.216.145.214"
+	t=year(now)&month(now)&day(now)
+	run="copy startup-config tftp://"&serverip&"/run-"&replace(mid(fileName(objTab),7),".log","")&"-"&t&".log"
+	objTab.Screen.Send(run & chr(13))
+End Sub
+
 set fso=CreateObject("Scripting.FileSystemObject")
 
-' openLogAll()
+sub backup()
+	set fso=CreateObject("Scripting.FileSystemObject")
+	tabNum=crt.GetTabCount
+	for tab=1 to tabNum
+		set objTab=crt.GetTab(tab)
+		objTab.Activate
+		runCfg(objTab)
+		crt.sleep(1)
+	next
 
-' tabNum=crt.GetTabCount
-' for each comm in split(getComm(),chr(13))
-' 	for tab=1 to tabNum
-' 		set objTab=crt.GetTab(tab)
-' 		objTab.Activate
-' 		'objTab.Screen.Clear
-' 		objTab.Screen.Send(RTrim(comm) & chr(13))
-' 		crt.sleep(5000)
-' 	next
-' 	crt.GetTab(1).Activate
-' 	crt.sleep(1000)
-' 	check=1
-' 	count=1
-' 	do while(check<=tabNum)
-' 		set checkTab=crt.GetTab(check)
-' 		checkTab.Activate
-' 		if waitStop(checkTab) then
-' 			check=check+1
-' 			checkTime="checktime "&date&" "&hour(now)&":"&minute(now)&":"&second(now)&" checktime"
-' 			line="=========="
-' 			checkTab.Screen.Send("!"&line&checktime&line& chr(13))
-' 		end if 
-' 		count=count+1
-' 		if count>15 then
-' 			reset()
-' 			count=1
-' 		end if 
-' 		crt.sleep(1000)
-' 	loop
-' next
+	set objTab=crt.GetTab(1)
 
-' closeLogAll()
-tabNum=crt.GetTabCount
-for tab=1 to tabNum
-	set objTab=crt.GetTab(tab)
-	getLog(objTab)
-next
+	check=1
+	do while check<=tabNum
+		set checkTab=crt.GetTab(check)
+		checkTab.Activate
+		if waitStop(checkTab) then
+			check=check+1
+		end if 
+		crt.sleep(200)
+	loop
+
+	for tab=1 to tabNum
+		set objTab=crt.GetTab(tab)
+		objTab.Activate
+		apCfg(objTab)
+		crt.sleep(1)
+	next
+end sub
+
+backup()
