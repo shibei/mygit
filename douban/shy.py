@@ -62,3 +62,5 @@ while 1==1:
     for i in range(0,10,5):
             print '等待：'.decode('utf-8')+str(10-i)+'秒'.decode('utf-8')
             time.sleep(5)
+
+    
