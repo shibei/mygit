@@ -63,4 +63,4 @@ while 1==1:
             print '等待：'.decode('utf-8')+str(10-i)+'秒'.decode('utf-8')
             time.sleep(5)
 
-    
+#test    
